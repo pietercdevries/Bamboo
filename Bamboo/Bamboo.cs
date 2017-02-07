@@ -7,6 +7,10 @@ namespace Bamboo
 {
     public class Bamboo
     {
+        public Bamboo()
+        {
+        }
+
         private string connectionString { get; set; }
 
         public void Add(object item, string objectName, string[] paramaterNames)
@@ -64,11 +68,7 @@ namespace Bamboo
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 sqlConnection.Open();
-                using (var transaction = sqlConnection.BeginTransaction())
-                {
-                    sqlConnection.ExecuteAsync($"Insert Into [{objectName}] ({propertyNames}) Values ({propertyParamaters})", item, transaction);
-                    transaction.Commit();
-                }
+                sqlConnection.ExecuteAsync($"Insert Into [{objectName}] ({propertyNames}) Values ({propertyParamaters})", item);
                 sqlConnection.Close();
             }
         }
@@ -128,11 +128,7 @@ namespace Bamboo
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 sqlConnection.Open();
-                using (var transaction = sqlConnection.BeginTransaction())
-                {
-                    sqlConnection.ExecuteAsync($"Insert Into [{objectName}] ({propertyNames}) Values ({propertyParamaters})", items, transaction);
-                    transaction.Commit();
-                }
+                sqlConnection.ExecuteAsync($"Insert Into [{objectName}] ({propertyNames}) Values ({propertyParamaters})", items);
                 sqlConnection.Close();
             }
         }
@@ -192,11 +188,7 @@ namespace Bamboo
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 sqlConnection.Open();
-                using (var transaction = sqlConnection.BeginTransaction())
-                {
-                    sqlConnection.ExecuteAsync($"Update [{objectName}] SET {properties} Where Id = @Id", item, transaction);
-                    transaction.Commit();
-                }
+                sqlConnection.ExecuteAsync($"Update [{objectName}] SET {properties} Where Id = @Id", item);
                 sqlConnection.Close();
             }
         }
@@ -256,11 +248,7 @@ namespace Bamboo
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 sqlConnection.Open();
-                using (var transaction = sqlConnection.BeginTransaction())
-                {
-                    sqlConnection.ExecuteAsync($"Update [{objectName}] SET {properties} Where Id = @Id", items, transaction);
-                    transaction.Commit();
-                }
+                sqlConnection.ExecuteAsync($"Update [{objectName}] SET {properties} Where Id = @Id", items);
                 sqlConnection.Close();
             }
         }
@@ -284,11 +272,7 @@ namespace Bamboo
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 sqlConnection.Open();
-                using (var transaction = sqlConnection.BeginTransaction())
-                {
-                    sqlConnection.ExecuteAsync($"DELETE FROM [{objectName}] Where Id = @Id", item, transaction);
-                    transaction.Commit();
-                }
+                sqlConnection.ExecuteAsync($"DELETE FROM [{objectName}] Where Id = @Id", item);
                 sqlConnection.Close();
             }
         }
@@ -312,11 +296,7 @@ namespace Bamboo
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 sqlConnection.Open();
-                using (var transaction = sqlConnection.BeginTransaction())
-                {
-                    sqlConnection.ExecuteAsync($"DELETE FROM [{objectName}] Where Id = @Id", items, transaction);
-                    transaction.Commit();
-                }
+                sqlConnection.ExecuteAsync($"DELETE FROM [{objectName}] Where Id = @Id", items);
                 sqlConnection.Close();
             }
         }
