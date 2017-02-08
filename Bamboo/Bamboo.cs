@@ -118,29 +118,24 @@ namespace Bamboo
 
         public void Delete(object item, string objectName)
         {
-            if (item != null)
-            {
-                string itemName = item.GetType().Name;
-                KeyValuePair<string, object> command = new KeyValuePair<string, object>($"DELETE FROM [{itemName}] Where Id = @Id", item);
-                transactions.Add(command);
-            }
+            string itemName = item.GetType().Name;
+            KeyValuePair<string, object> command = new KeyValuePair<string, object>($"DELETE FROM [{itemName}] Where Id = @Id", item);
+            transactions.Add(command);
         }
 
         public void Delete(List<object> items)
         {
-            if (items != null)
-            {
-                string itemName = items.First().GetType().Name;
-                KeyValuePair<string, object> command = new KeyValuePair<string, object>($"DELETE FROM [{itemName}] Where Id = @Id", items);
-                transactions.Add(command);
-            }
+            string itemName = items.First().GetType().Name;
+            KeyValuePair<string, object> command = new KeyValuePair<string, object>($"DELETE FROM [{itemName}] Where Id = @Id", items);
+            transactions.Add(command);
         }
 
         //Async Methods
-        public void AddAsync(object item, string objectName, string[] paramaterNames)
+        public void AddAsync(object item, string[] paramaterNames)
         {
             string propertyNames = "";
             string propertyParamaters = "";
+            string itemName = item.GetType().Name;
 
             int propertyCount = paramaterNames.Count();
             for (int I = 0; I < propertyCount; I++)
@@ -160,15 +155,16 @@ namespace Bamboo
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 sqlConnection.Open();
-                sqlConnection.ExecuteAsync($"Insert Into [{objectName}] ({propertyNames}) Values ({propertyParamaters})", item);
+                sqlConnection.ExecuteAsync($"Insert Into [{itemName}] ({propertyNames}) Values ({propertyParamaters})", item);
                 sqlConnection.Close();
             }
         }
 
-        public void AddAsync(List<object> items, string objectName, string[] paramaterNames)
+        public void AddAsync(List<object> items, string[] paramaterNames)
         {
             string propertyNames = "";
             string propertyParamaters = "";
+            string itemName = items.First().GetType().Name;
 
             int propertyCount = paramaterNames.Count();
             for (int I = 0; I < propertyCount; I++)
@@ -188,14 +184,15 @@ namespace Bamboo
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 sqlConnection.Open();
-                sqlConnection.ExecuteAsync($"Insert Into [{objectName}] ({propertyNames}) Values ({propertyParamaters})", items);
+                sqlConnection.ExecuteAsync($"Insert Into [{itemName}] ({propertyNames}) Values ({propertyParamaters})", items);
                 sqlConnection.Close();
             }
         }
 
-        public void EditAsync(object item, string objectName, string[] paramaterNames)
+        public void EditAsync(object item, string[] paramaterNames)
         {
             string properties = "";
+            string itemName = item.GetType().Name;
 
             int propertyCount = paramaterNames.Count();
             for (int I = 0; I < propertyCount; I++)
@@ -216,14 +213,15 @@ namespace Bamboo
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 sqlConnection.Open();
-                sqlConnection.ExecuteAsync($"Update [{objectName}] SET {properties} Where Id = @Id", item);
+                sqlConnection.ExecuteAsync($"Update [{itemName}] SET {properties} Where Id = @Id", item);
                 sqlConnection.Close();
             }
         }
 
-        public void EditAsync(List<object> items, string objectName, string[] paramaterNames)
+        public void EditAsync(List<object> items, string[] paramaterNames)
         {
             string properties = "";
+            string itemName = items.First().GetType().Name;
 
             int propertyCount = paramaterNames.Count();
             for (int I = 0; I < propertyCount; I++)
@@ -244,30 +242,35 @@ namespace Bamboo
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 sqlConnection.Open();
-                sqlConnection.ExecuteAsync($"Update [{objectName}] SET {properties} Where Id = @Id", items);
+                sqlConnection.ExecuteAsync($"Update [{itemName}] SET {properties} Where Id = @Id", items);
                 sqlConnection.Close();
             }
         }
 
-        public void DeleteAsync(object item, string objectName)
+        public void DeleteAsync(object item)
         {
+            string itemName = item.GetType().Name;
+
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 sqlConnection.Open();
-                sqlConnection.ExecuteAsync($"DELETE FROM [{objectName}] Where Id = @Id", item);
+                sqlConnection.ExecuteAsync($"DELETE FROM [{itemName}] Where Id = @Id", item);
                 sqlConnection.Close();
             }
         }
 
-        public void DeleteAsync(List<object> items, string objectName)
+        public void DeleteAsync(List<object> items)
         {
+            string itemName = items.First().GetType().Name;
+
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
                 sqlConnection.Open();
-                sqlConnection.ExecuteAsync($"DELETE FROM [{objectName}] Where Id = @Id", items);
+                sqlConnection.ExecuteAsync($"DELETE FROM [{itemName}] Where Id = @Id", items);
                 sqlConnection.Close();
             }
         }
+
 
         public void SaveChanges()
         {
