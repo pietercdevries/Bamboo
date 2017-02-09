@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-   <id>Bamboo1.0.0</id>
-    <version>1.0.4</version>
+   <id>Bamboo.Net</id>
+    <version>1.0.8</version>
     <authors>pieterdevries</authors>
     <owners>pieterdevries</owners>
     <licenseUrl>https://en.wikipedia.org/wiki/MIT_License</licenseUrl>

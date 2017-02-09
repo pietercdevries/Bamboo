@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -11,123 +12,186 @@ namespace Bamboo
         {
         }
 
+
         private string connectionString { get; set; }
+
+        public void newConnection(string connection)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                connectionString = connection;
+            }
+        }
 
         private List<KeyValuePair<string, object>> transactions = new List<KeyValuePair<string, object>>();
 
-        public void Add(object item, string[] paramaterNames)
+
+        public void Add(object item)
         {
             string propertyNames = "";
             string propertyParamaters = "";
-            string itemName = item.GetType().Name;
+            Type itemType = item.GetType();
 
-            int propertyCount = paramaterNames.Count();
-            for (int I = 0; I < propertyCount; I++)
+            System.Reflection.PropertyInfo[] properties = itemType.GetProperties();
+
+            for (int I = 0; I < properties.Count(); I++)
             {
-                if (I == propertyCount - 1)
+                if (properties[I].Name.Equals("Id", StringComparison.CurrentCultureIgnoreCase) || properties[I].Name.Equals("AutoId", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    propertyNames += "[" + paramaterNames[I] + "]";
-                    propertyParamaters += "@" + paramaterNames[I];
+                    continue;
+                }
+
+                if (I == properties.Count() - 1)
+                {
+                    propertyNames += "[" + properties[I].Name + "]";
+                    propertyParamaters += "@" + properties[I].Name;
                 }
                 else
                 {
-                    propertyNames += "[" + paramaterNames[I] + "],";
-                    propertyParamaters += "@" + paramaterNames[I] + ",";
+                    propertyNames += "[" + properties[I].Name + "],";
+                    propertyParamaters += "@" + properties[I].Name + ",";
                 }
             }
 
+            string itemName = itemType.Name;
             KeyValuePair<string, object> command = new KeyValuePair<string, object>($"Insert Into[{ itemName}] ({ propertyNames}) Values({ propertyParamaters})", item);
             transactions.Add(command);
         }
 
-        public void Add(List<object> items, string[] paramaterNames)
+        public void Add(List<object> items)
         {
             string propertyNames = "";
             string propertyParamaters = "";
-            string itemName = items.First().GetType().Name;
+            Type itemType = items.First().GetType();
 
-            int propertyCount = paramaterNames.Count();
-            for (int I = 0; I < propertyCount; I++)
+            System.Reflection.PropertyInfo[] properties = itemType.GetProperties();
+
+            for (int I = 0; I < properties.Count(); I++)
             {
-                if (I == propertyCount - 1)
+                if (properties[I].Name.Equals("Id", StringComparison.CurrentCultureIgnoreCase) || properties[I].Name.Equals("AutoId", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    propertyNames += "[" + paramaterNames[I] + "]";
-                    propertyParamaters += "@" + paramaterNames[I];
+                    continue;
+                }
+
+                if (I == properties.Count() - 1)
+                {
+                    propertyNames += "[" + properties[I].Name + "]";
+                    propertyParamaters += "@" + properties[I].Name;
                 }
                 else
                 {
-                    propertyNames += "[" + paramaterNames[I] + "],";
-                    propertyParamaters += "@" + paramaterNames[I] + ",";
+                    propertyNames += "[" + properties[I].Name + "],";
+                    propertyParamaters += "@" + properties[I].Name + ",";
                 }
             }
 
+            string itemName = itemType.Name;
             KeyValuePair<string, object> command = new KeyValuePair<string, object>($"Insert Into [{itemName}] ({propertyNames}) Values ({propertyParamaters})", items);
             transactions.Add(command);
         }
 
-        public void Edit(object item, string[] paramaterNames)
+        public void Edit(object item)
         {
-            string properties = "";
-            string itemName = item.GetType().Name;
+            string propertyNames = "";
+            string propertyParamaters = "";
+            Type itemType = item.GetType();
 
-            int propertyCount = paramaterNames.Count();
-            for (int I = 0; I < propertyCount; I++)
+            System.Reflection.PropertyInfo[] properties = itemType.GetProperties();
+
+            for (int I = 0; I < properties.Count(); I++)
             {
-                if (paramaterNames[I] != null)
+                if (properties[I].Name.Equals("Id", StringComparison.CurrentCultureIgnoreCase) || properties[I].Name.Equals("AutoId", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    if (I == propertyCount - 1)
-                    {
-                        properties += "[" + paramaterNames[I] + "] = " + "@" + paramaterNames[I]; ;
-                    }
-                    else
-                    {
-                        properties += "[" + paramaterNames[I] + "] = " + "@" + paramaterNames[I] + ", ";
-                    }
+                    continue;
+                }
+
+                if (I == properties.Count() - 1)
+                {
+                    propertyNames += "[" + properties[I].Name + "]";
+                    propertyParamaters += "@" + properties[I].Name;
+                }
+                else
+                {
+                    propertyNames += "[" + properties[I].Name + "],";
+                    propertyParamaters += "@" + properties[I].Name + ",";
                 }
             }
 
+            string itemName = itemType.Name;
             KeyValuePair<string, object> command = new KeyValuePair<string, object>($"Update [{itemName}] SET {properties} Where Id = @Id", item);
             transactions.Add(command);
         }
 
-        public void Edit(List<object> items, string[] paramaterNames)
+        public void Edit(List<object> items)
         {
-            string properties = "";
-            string itemName = items.First().GetType().Name;
+            string propertyNames = "";
+            string propertyParamaters = "";
+            Type itemType = items.First().GetType();
 
-            int propertyCount = paramaterNames.Count();
-            for (int I = 0; I < propertyCount; I++)
+            System.Reflection.PropertyInfo[] properties = itemType.GetProperties();
+
+            for (int I = 0; I < properties.Count(); I++)
             {
-                if (paramaterNames[I] != null)
+                if (properties[I].Name.Equals("Id", StringComparison.CurrentCultureIgnoreCase) || properties[I].Name.Equals("AutoId", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    if (I == propertyCount - 1)
-                    {
-                        properties += "[" + paramaterNames[I] + "] = " + "@" + paramaterNames[I]; ;
-                    }
-                    else
-                    {
-                        properties += "[" + paramaterNames[I] + "] = " + "@" + paramaterNames[I] + ", ";
-                    }
+                    continue;
+                }
+
+                if (I == properties.Count() - 1)
+                {
+                    propertyNames += "[" + properties[I].Name + "]";
+                    propertyParamaters += "@" + properties[I].Name;
+                }
+                else
+                {
+                    propertyNames += "[" + properties[I].Name + "],";
+                    propertyParamaters += "@" + properties[I].Name + ",";
                 }
             }
 
+            string itemName = itemType.Name;
             KeyValuePair<string, object> command = new KeyValuePair<string, object>($"Update [{itemName}] SET {properties} Where Id = @Id", items);
             transactions.Add(command);
         }
 
         public void Delete(object item)
         {
-            string itemName = item.GetType().Name;
-            KeyValuePair<string, object> command = new KeyValuePair<string, object>($"DELETE FROM [{itemName}] Where Id = @Id", item);
+            Type itemtype = item.GetType();
+            string itemName = itemtype.Name;
+            string primaryKey = "";
+
+            if (itemtype.GetProperty("Id") != null)
+            {
+                primaryKey = "Id";
+            }
+            else if (itemtype.GetProperty("AutoId") != null)
+            {
+                primaryKey = "AutoId";
+            }
+
+            KeyValuePair<string, object> command = new KeyValuePair<string, object>($"DELETE FROM [{itemName}] Where {primaryKey} = @{primaryKey}", item);
             transactions.Add(command);
         }
 
         public void Delete(List<object> items)
         {
-            string itemName = items.First().GetType().Name;
-            KeyValuePair<string, object> command = new KeyValuePair<string, object>($"DELETE FROM [{itemName}] Where Id = @Id", items);
+            Type itemtype = items.First().GetType();
+            string itemName = itemtype.Name;
+            string primaryKey = "";
+
+            if (itemtype.GetProperty("Id") != null)
+            {
+                primaryKey = "Id";
+            }
+            else if (itemtype.GetProperty("AutoId") != null)
+            {
+                primaryKey = "AutoId";
+            }
+
+            KeyValuePair<string, object> command = new KeyValuePair<string, object>($"DELETE FROM [{itemName}] Where {primaryKey} = @{primaryKey}", items);
             transactions.Add(command);
         }
+
 
         public void SaveChanges()
         {
@@ -194,26 +258,35 @@ namespace Bamboo
             transactions.Clear();
         }
 
-        public void ForceAdd(object item, string[] paramaterNames)
+
+        public void QuickAdd(object item)
         {
             string propertyNames = "";
             string propertyParamaters = "";
-            string itemName = item.GetType().Name;
+            Type itemType = item.GetType();
 
-            int propertyCount = paramaterNames.Count();
-            for (int I = 0; I < propertyCount; I++)
+            System.Reflection.PropertyInfo[] properties = itemType.GetProperties();
+
+            for (int I = 0; I < properties.Count(); I++)
             {
-                if (I == propertyCount - 1)
+                if (properties[I].Name.Equals("Id", StringComparison.CurrentCultureIgnoreCase) || properties[I].Name.Equals("AutoId", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    propertyNames += "[" + paramaterNames[I] + "]";
-                    propertyParamaters += "@" + paramaterNames[I];
+                    continue;
+                }
+
+                if (I == properties.Count() - 1)
+                {
+                    propertyNames += "[" + properties[I].Name + "]";
+                    propertyParamaters += "@" + properties[I].Name;
                 }
                 else
                 {
-                    propertyNames += "[" + paramaterNames[I] + "],";
-                    propertyParamaters += "@" + paramaterNames[I] + ",";
+                    propertyNames += "[" + properties[I].Name + "],";
+                    propertyParamaters += "@" + properties[I].Name + ",";
                 }
             }
+
+            string itemName = itemType.Name;
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
@@ -238,26 +311,34 @@ namespace Bamboo
             }
         }
 
-        public void ForceAdd(List<object> items, string[] paramaterNames)
+        public void QuickAdd(List<object> items)
         {
             string propertyNames = "";
             string propertyParamaters = "";
-            string itemName = items.First().GetType().Name;
+            Type itemType = items.First().GetType();
 
-            int propertyCount = paramaterNames.Count();
-            for (int I = 0; I < propertyCount; I++)
+            System.Reflection.PropertyInfo[] properties = itemType.GetProperties();
+
+            for (int I = 0; I < properties.Count(); I++)
             {
-                if (I == propertyCount - 1)
+                if (properties[I].Name.Equals("Id", StringComparison.CurrentCultureIgnoreCase) || properties[I].Name.Equals("AutoId", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    propertyNames += "[" + paramaterNames[I] + "]";
-                    propertyParamaters += "@" + paramaterNames[I];
+                    continue;
+                }
+
+                if (I == properties.Count() - 1)
+                {
+                    propertyNames += "[" + properties[I].Name + "]";
+                    propertyParamaters += "@" + properties[I].Name;
                 }
                 else
                 {
-                    propertyNames += "[" + paramaterNames[I] + "],";
-                    propertyParamaters += "@" + paramaterNames[I] + ",";
+                    propertyNames += "[" + properties[I].Name + "],";
+                    propertyParamaters += "@" + properties[I].Name + ",";
                 }
             }
+
+            string itemName = itemType.Name;
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
@@ -282,26 +363,34 @@ namespace Bamboo
             }
         }
 
-        public void ForceEdit(object item, string[] paramaterNames)
+        public void QuickEdit(object item)
         {
-            string properties = "";
-            string itemName = item.GetType().Name;
+            string propertyNames = "";
+            string propertyParamaters = "";
+            Type itemType = item.GetType();
 
-            int propertyCount = paramaterNames.Count();
-            for (int I = 0; I < propertyCount; I++)
+            System.Reflection.PropertyInfo[] properties = itemType.GetProperties();
+
+            for (int I = 0; I < properties.Count(); I++)
             {
-                if (paramaterNames[I] != null)
+                if (properties[I].Name.Equals("Id", StringComparison.CurrentCultureIgnoreCase) || properties[I].Name.Equals("AutoId", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    if (I == propertyCount - 1)
-                    {
-                        properties += "[" + paramaterNames[I] + "] = " + "@" + paramaterNames[I]; ;
-                    }
-                    else
-                    {
-                        properties += "[" + paramaterNames[I] + "] = " + "@" + paramaterNames[I] + ", ";
-                    }
+                    continue;
+                }
+
+                if (I == properties.Count() - 1)
+                {
+                    propertyNames += "[" + properties[I].Name + "]";
+                    propertyParamaters += "@" + properties[I].Name;
+                }
+                else
+                {
+                    propertyNames += "[" + properties[I].Name + "],";
+                    propertyParamaters += "@" + properties[I].Name + ",";
                 }
             }
+
+            string itemName = itemType.Name;
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
@@ -326,26 +415,34 @@ namespace Bamboo
             }
         }
 
-        public void ForceEdit(List<object> items, string[] paramaterNames)
+        public void QuickEdit(List<object> items)
         {
-            string properties = "";
-            string itemName = items.First().GetType().Name;
+            string propertyNames = "";
+            string propertyParamaters = "";
+            Type itemType = items.First().GetType();
 
-            int propertyCount = paramaterNames.Count();
-            for (int I = 0; I < propertyCount; I++)
+            System.Reflection.PropertyInfo[] properties = itemType.GetProperties();
+
+            for (int I = 0; I < properties.Count(); I++)
             {
-                if (paramaterNames[I] != null)
+                if (properties[I].Name.Equals("Id", StringComparison.CurrentCultureIgnoreCase) || properties[I].Name.Equals("AutoId", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    if (I == propertyCount - 1)
-                    {
-                        properties += "[" + paramaterNames[I] + "] = " + "@" + paramaterNames[I]; ;
-                    }
-                    else
-                    {
-                        properties += "[" + paramaterNames[I] + "] = " + "@" + paramaterNames[I] + ", ";
-                    }
+                    continue;
+                }
+
+                if (I == properties.Count() - 1)
+                {
+                    propertyNames += "[" + properties[I].Name + "]";
+                    propertyParamaters += "@" + properties[I].Name;
+                }
+                else
+                {
+                    propertyNames += "[" + properties[I].Name + "],";
+                    propertyParamaters += "@" + properties[I].Name + ",";
                 }
             }
+
+            string itemName = itemType.Name;
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
@@ -370,9 +467,20 @@ namespace Bamboo
             }
         }
 
-        public void ForceDelete(object item)
+        public void QuickDelete(object item)
         {
-            string itemName = item.GetType().Name;
+            Type itemtype = item.GetType();
+            string itemName = itemtype.Name;
+            string primaryKey = "";
+
+            if (itemtype.GetProperty("Id") != null)
+            {
+                primaryKey = "Id";
+            }
+            else if (itemtype.GetProperty("AutoId") != null)
+            {
+                primaryKey = "AutoId";
+            }
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
@@ -381,7 +489,7 @@ namespace Bamboo
                 {
                     try
                     {
-                        sqlConnection.Execute($"DELETE FROM [{itemName}] Where Id = @Id", item, sqlTransaction);
+                        sqlConnection.Execute($"DELETE FROM [{itemName}] Where {primaryKey} = @{primaryKey}", item, sqlTransaction);
                         sqlTransaction.Commit();
                     }
                     catch
@@ -397,9 +505,20 @@ namespace Bamboo
             }
         }
 
-        public void ForceDelete(List<object> items)
+        public void QuickDelete(List<object> items)
         {
-            string itemName = items.First().GetType().Name;
+            Type itemtype = items.First().GetType();
+            string itemName = itemtype.Name;
+            string primaryKey = "";
+
+            if (itemtype.GetProperty("Id") != null)
+            {
+                primaryKey = "Id";
+            }
+            else if (itemtype.GetProperty("AutoId") != null)
+            {
+                primaryKey = "AutoId";
+            }
 
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
@@ -408,7 +527,7 @@ namespace Bamboo
                 {
                     try
                     {
-                        sqlConnection.Execute($"DELETE FROM [{itemName}] Where Id = @Id", items, sqlTransaction);
+                        sqlConnection.Execute($"DELETE FROM [{itemName}] Where {primaryKey} = @{primaryKey}", items, sqlTransaction);
                         sqlTransaction.Commit();
                     }
                     catch
@@ -421,14 +540,6 @@ namespace Bamboo
                     }
                 }
                 sqlConnection.Close();
-            }
-        }
-
-        public void newConnection(string connection)
-        {
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                connectionString = connection;
             }
         }
     }
